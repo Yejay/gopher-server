@@ -40,31 +40,27 @@ The compiled binary will be available at `target/release/gopher_server`
 
 ## Usage
 
-1. Create a content directory:
+The repository includes a `test-content` directory with sample files ready for testing.
+
+Run the server pointing to the included test content:
 ```bash
-mkdir -p test-content
-```
-
-2. Add some test content:
-```bash
-# Create test directories and files
-mkdir -p test-content/documents
-mkdir -p test-content/images
-
-# Add some test content
-echo "Hello from Gopherspace!" > test-content/hello.txt
-echo "This is a test document" > test-content/documents/test.txt
-
-# Add test images (optional)
-# The server supports PNG, GIF, and JPEG formats
-```
-
-3. Run the server:
-```bash
-sudo cargo run -- /path/to/test-content
+sudo cargo run -- $(pwd)/test-content
 ```
 
 The server will start listening on port 70 (requires sudo for port binding).
+
+### Test Content Structure
+
+The included test content contains:
+```
+test-content/
+├── hello.txt           # Simple text file
+├── documents/          # Directory with documents
+│   └── test.txt       # Test document
+└── images/            # Directory with images
+    ├── sample.png     # Sample PNG image
+    └── sample.gif     # Sample GIF image
+```
 
 ## Project Structure
 
@@ -104,16 +100,3 @@ Example test using netcat:
 echo "/" | nc localhost 70    # Get root directory listing
 echo "/hello.txt" | nc localhost 70    # Get content of hello.txt
 ```
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
-## Acknowledgments
-
-- Created as part of the Programming Languages and Concepts course at BHT Berlin
-- Based on the Gopher protocol specification RFC 1436
