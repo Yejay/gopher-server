@@ -7,21 +7,16 @@ use std::time::Duration;
 use crate::gopher::{ITEM_DIRECTORY, ITEM_FILE, ITEM_INFO, ITEM_IMAGE, create_menu_line};
 
 pub fn handle_request(mut stream: TcpStream, root_dir: &Path) -> io::Result<()> {
-    // Set read timeout to prevent hanging
     stream.set_read_timeout(Some(Duration::from_secs(5)))?;
     
-    // Create a buffered reader
     let mut reader = BufReader::new(&stream);
     let mut selector = String::new();
     
-    // Read until we get a line ending
     match reader.read_line(&mut selector) {
         Ok(_) => {
-            // Clean up the selector
             let selector = selector.trim_end();
             println!("Received selector: '{}'", selector);
             
-            // Convert selector to filesystem path
             let path = root_dir.join(selector.trim_start_matches('/'));
             println!("Looking up path: {}", path.display());
             
@@ -57,7 +52,6 @@ pub fn serve_file(file_path: &Path, stream: &mut TcpStream) -> io::Result<()> {
 
 pub fn serve_directory(dir_path: &Path, stream: &mut TcpStream, root_dir: &Path) -> io::Result<()> {
     println!("Sending directory listing...");
-    // Send directory header
     let relative_path = dir_path.strip_prefix(root_dir)
         .unwrap_or(dir_path)
         .display()
@@ -66,7 +60,6 @@ pub fn serve_directory(dir_path: &Path, stream: &mut TcpStream, root_dir: &Path)
     let header = format!("{}Directory listing of {}\r\n", ITEM_INFO, relative_path);
     stream.write_all(header.as_bytes())?;
 
-    // List directory contents
     let entries = fs::read_dir(dir_path)?;
     for entry in entries {
         let entry = entry?;
@@ -74,17 +67,14 @@ pub fn serve_directory(dir_path: &Path, stream: &mut TcpStream, root_dir: &Path)
         let name = entry.file_name();
         let display_name = name.to_string_lossy();
         
-        // Create relative selector
         let selector = path.strip_prefix(root_dir)
             .unwrap_or(&path)
             .to_string_lossy()
             .into_owned();
 
-        // Determine item type
         let item_type = if path.is_dir() {
             ITEM_DIRECTORY
         } else {
-            // Check file extension for image types
             if let Some(extension) = path.extension() {
                 match extension.to_str().unwrap_or("").to_lowercase().as_str() {
                     "gif" | "png" | "jpg" | "jpeg" => ITEM_IMAGE,

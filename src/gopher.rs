@@ -1,7 +1,6 @@
 pub const HOST: &str = "localhost";
 pub const PORT: &str = "70";
 
-// Gopher menu item types
 pub const ITEM_FILE: char = '0';
 pub const ITEM_DIRECTORY: char = '1';
 pub const ITEM_ERROR: char = '3';

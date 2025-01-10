@@ -5,7 +5,6 @@ mod server;
 use std::path::PathBuf;
 
 fn main() {
-    // Get root directory from command line argument
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 2 {
         eprintln!("Usage: {} <root_directory>", args[0]);
